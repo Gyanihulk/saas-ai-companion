@@ -2,6 +2,7 @@ import { auth, currentUser } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 import prismadb from "@/lib/prismadb";
+import { checkSubscription } from "@/lib/subscription";
 
 export async function PATCH(
   req: Request,
@@ -20,6 +21,11 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const isPro=await checkSubscription()
+
+    if(!isPro){
+      return new NextResponse("PRo subscription required",{status:403})
+    }
     if (
       !src ||
       !name ||
